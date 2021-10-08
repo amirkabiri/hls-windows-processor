@@ -80,7 +80,7 @@ async function log(msg, type = 'info'){
 
   document.getElementById('logs').appendChild(p)
 
-  await sleep();
+  await sleep(50);
 }
 
 
