@@ -69,13 +69,18 @@ function getFileExtension(path){
   const ext = path.split('.');
   return ext[ext.length - 1];
 }
-function log(msg, type = 'info'){
+function sleep(ms = 10){
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+async function log(msg, type = 'info'){
   const p = document.createElement('p');
   p.innerHTML = msg;
 
   if(type === 'error') p.style.color = 'red';
 
   document.getElementById('logs').appendChild(p)
+
+  await sleep();
 }
 
 
@@ -83,7 +88,7 @@ window.onload = function(){
   document.getElementById('video').oninput = async function (e){
     if(!this.files.length) return;
     const { path: videoPath } = this.files[0];
-    log('start');
+    await log('start');
 
     try {
       // get video file name and extension
@@ -107,27 +112,27 @@ window.onload = function(){
       // copy video to temp folder
       if(! await exists(tempFilePath)) {
         await fs.promises.copyFile(videoPath, tempFilePath);
-        log('copied to ' + tempFilePath)
-      } else log('didnt copied. because already exists at '+ tempFilePath);
+        await log('copied to ' + tempFilePath)
+      } else await log('didnt copied. because already exists at '+ tempFilePath);
 
       // generate 16 bytes enc key buffer and write to the file
       if(! await exists(encPath)) {
         const encKey = await randBytes(16);
         await writeBufferToFile(encPath, encKey);
-        log('enc key created at ' + encPath);
-      } else log('enc already exists at ' + encPath);
+        await log('enc key created at ' + encPath);
+      } else await log('enc already exists at ' + encPath);
 
       // create enc.keyinfo file
       if(! await exists(encInfoPath)){
         const IV = (await randBytes(16)).toString('hex');
         let keyInfoFileContent = `[LINK_TO_ENC_KEY_FILE]\n` + encPath+`\n` + IV;
         await fs.promises.writeFile(encInfoPath, keyInfoFileContent);
-        log('enc.keyinfo created at ' + encInfoPath)
-      } else log('enc.keyinfo already exists at ' + encInfoPath)
+        await log('enc.keyinfo created at ' + encInfoPath)
+      } else await log('enc.keyinfo already exists at ' + encInfoPath)
 
       // run ffmpeg
       if(! await exists(manifestPath)){
-        log('start conversion, heavy process, please wait ...')
+        await log('start conversion, heavy process, please wait ...')
         execSync([
           FFMPEG_PATH,
           '-y',
@@ -138,14 +143,14 @@ window.onload = function(){
           '-hls_segment_filename "'+ path.join(tempFolderPath, '%d.ts') +'"',
           manifestPath
         ].join(' '));
-        log('conversion ended')
-      } else log('converted files already exist')
+        await log('conversion ended')
+      } else await log('converted files already exist')
 
       // write the status
       if(! await exists(statusPath)) {
         await fs.promises.writeFile(statusPath, 'finished');
-        log('status generated at ' + statusPath);
-      } else log('status already exists at ' + statusPath);
+        await log('status generated at ' + statusPath);
+      } else await log('status already exists at ' + statusPath);
 
       // make zip file
       if(! await exists(zipPath)){
@@ -154,20 +159,20 @@ window.onload = function(){
           .filter(file => file !== tempFileName)
           .map(file => path.join(tempFolderPath, file));
         await zip(zipPath, filesToZip);
-        log('zip file created at ' + zipPath);
-      } else log('zip file already exists at ' + zipPath);
+        await log('zip file created at ' + zipPath);
+      } else await log('zip file already exists at ' + zipPath);
 
       // copy file aside of original video
       await fs.promises.copyFile(zipPath, videoPath + '.zip');
-      log('final result copied at ' + videoPath + '.zip');
+      await log('final result copied at ' + videoPath + '.zip');
 
       // remove tmp files
       await fs.promises.rmdir(tempFolderPath, { recursive: true })
-      log('temp files cleaned')
+      await log('temp files cleaned')
     }catch (e){
-      log(e.toString(), 'error');
+      await log(e.toString(), 'error');
     }
 
-    log('end');
+    await log('end');
   }
 }
