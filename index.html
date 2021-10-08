@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+<!--    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
+    <link href="./styles.css" rel="stylesheet">
+    <title>Hello World!</title>
+    <style>
+      body{
+        font-family: Tahoma,serif;
+      }
+      #logs p {
+        border-bottom: 1px solid rgba(0,0,0,.3);
+        padding: 10px 0;
+        margin:0;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Choose a mp4 or mkv video.</h2>
+    <p>and after processing, there will be a zip file as same as the video file name.</p>
+    <input accept=".mp4,.mkv" id="video" type="file">
+    <div id="logs"></div>
+    <!-- You can also require other files to run in this process -->
+    <script defer src="./renderer.js"></script>
+  </body>
+</html>
