@@ -90,8 +90,8 @@ window.onload = function(){
       const fileName = getFileName(videoPath);
       const ext = getFileExtension(fileName);
 
-      // FIXME create a random name for tempFolder and create the folder
-      const tempFolder = /*Math.floor(Math.random() * 100000000)*/1458010002 + fileName;
+      // create a random name for tempFolder and create the folder
+      const tempFolder = Math.floor(Math.random() * 100000000) + fileName;
       const tempFolderPath = path.join(__dirname, '.tmp', tempFolder);
       await fs.promises.mkdir(tempFolderPath, { recursive: true });
 
