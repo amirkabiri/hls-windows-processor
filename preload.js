@@ -88,6 +88,8 @@ window.onload = function(){
   document.getElementById('video').oninput = async function (e){
     if(!this.files.length) return;
     const { path: videoPath } = this.files[0];
+
+    document.getElementById('logs').innerHTML = '';
     await log('start');
 
     try {
