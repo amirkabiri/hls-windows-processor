@@ -136,14 +136,14 @@ window.onload = function(){
       if(! await exists(manifestPath)){
         await log('start conversion, heavy process, please wait ...')
         execSync([
-          FFMPEG_PATH,
-          '-y',
+          `"${ FFMPEG_PATH }"`,
+          `-y`,
           `-i "${ tempFilePath }"`,
-          '-hls_time 9',
+          `-hls_time 9`,
           `-hls_key_info_file "${ encInfoPath }"`,
-          '-hls_playlist_type vod',
-          `-hls_segment_filename "${ path.join(tempFolderPath, '%d.ts') }"`,
-          manifestPath
+          `-hls_playlist_type vod`,
+          `-hls_segment_filename "${ path.join(tempFolderPath, "%d.ts") }"`,
+          `"${ manifestPath }"`
         ].join(' '));
         await log('conversion ended')
       } else await log('converted files already exist')
@@ -172,7 +172,7 @@ window.onload = function(){
       await fs.promises.rmdir(tempFolderPath, { recursive: true })
       await log('temp files cleaned')
     }catch (e){
-      await log(e.toString(), 'error');
+      await log(e.toString().replaceAll('\n', '<br/>'), 'error');
     }
 
     await log('end');
