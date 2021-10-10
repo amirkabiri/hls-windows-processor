@@ -138,11 +138,11 @@ window.onload = function(){
         execSync([
           FFMPEG_PATH,
           '-y',
-          '-i ' + tempFilePath,
+          `-i "${ tempFilePath }"`,
           '-hls_time 9',
-          '-hls_key_info_file ' + encInfoPath,
+          `-hls_key_info_file "${ encInfoPath }"`,
           '-hls_playlist_type vod',
-          '-hls_segment_filename "'+ path.join(tempFolderPath, '%d.ts') +'"',
+          `-hls_segment_filename "${ path.join(tempFolderPath, '%d.ts') }"`,
           manifestPath
         ].join(' '));
         await log('conversion ended')
